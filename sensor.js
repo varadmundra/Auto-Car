@@ -25,8 +25,6 @@ class Sensor {
     }
 
 
-
-
     #getReading(ray, roadBorders) {
 
         let touches = [];
