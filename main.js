@@ -17,7 +17,7 @@ animate();
 
 //upadte the car and draw the car again 
 function animate() {
-    car.update();
+    car.update(road.borders);
 
     canvas.height = window.innerHeight;  //resizes canvas and it is clear;
 
