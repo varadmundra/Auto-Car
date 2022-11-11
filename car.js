@@ -10,13 +10,44 @@ class Car {
         this.maxSpeed = 3;
         this.friction = 0.05;
         this.angle = 0;
+        this.damaged = false;
 
         this.sensor = new Sensor(this);//passing the car thru this
         this.controls = new Controls();
     }
     update(roadBorders) {
         this.#move();
+        this.polygon = this.#createPolygon()//update after moving car
         this.sensor.update(roadBorders);
+
+    }
+    #createPolygon() {
+        const points = [];
+        const rad = Math.hypot(this.width, this.height) / 2;
+        const alpha = Math.atan2(this.width, this.height);
+
+        points.push({
+            x: this.x - Math.sin(this.angle - alpha) * rad,
+            y: this.y - Math.cos(this.angle - alpha) * rad
+        });
+
+        points.push({
+            x: this.x - Math.sin(this.angle + alpha) * rad,
+            y: this.y - Math.cos(this.angle + alpha) * rad
+        });
+
+        points.push({
+            x: this.x - Math.sin(Math.PI + this.angle - alpha) * rad,
+            y: this.y - Math.cos(Math.PI + this.angle - alpha) * rad
+        });
+
+        points.push({
+            x: this.x - Math.sin(Math.PI + this.angle + alpha) * rad,
+            y: this.y - Math.cos(Math.PI + this.angle + alpha) * rad
+        });
+
+        return points;
+
 
     }
     #move() {
@@ -77,22 +108,31 @@ class Car {
 
     //draw method 
     draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(-this.angle);
+        // ctx.save();
+        // ctx.translate(this.x, this.y);
+        // ctx.rotate(-this.angle);
+
+
+        // ctx.beginPath();
+        // //simple rect;
+        // ctx.rect(
+        //     - this.width / 2,  //x of the car will be center;
+        //     - this.height / 2,
+        //     this.width,
+        //     this.height
+        // );
+        // ctx.fill();//ask the context to fill the car rect 
+
+        // ctx.restore();//
 
 
         ctx.beginPath();
-        //simple rect;
-        ctx.rect(
-            - this.width / 2,  //x of the car will be center;
-            - this.height / 2,
-            this.width,
-            this.height
-        );
-        ctx.fill();//ask the context to fill the car rect 
+        ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
 
-        ctx.restore();//
+        for (let i = 1; i < this.polygon.length; i++) {
+            ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
+        }
+        ctx.fill();
 
         this.sensor.draw(ctx);//car draws its own sensors
 
