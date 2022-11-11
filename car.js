@@ -18,9 +18,23 @@ class Car {
     update(roadBorders) {
         this.#move();
         this.polygon = this.#createPolygon()//update after moving car
+        this.damaged = this.#assessDamage(roadBorders);
+
         this.sensor.update(roadBorders);
 
     }
+
+    #assessDamage(roadBorders) {
+        for (let i = 0; i < roadBorders.length; i++) {
+            if (polysIntersect(this.polygon, roadBorders[i])) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
     #createPolygon() {
         const points = [];
         const rad = Math.hypot(this.width, this.height) / 2;
@@ -47,9 +61,9 @@ class Car {
         });
 
         return points;
-
-
     }
+
+
     #move() {
         if (this.controls.forward) {
             this.speed += this.acceleration;         //y goes downwards;
@@ -126,6 +140,17 @@ class Car {
         // ctx.restore();//
 
 
+        //check if car is damageg
+        if (this.damaged) {
+            ctx.fillStyle = "gray";
+
+        }
+        else {
+            ctx.fillStyle = "black";
+        }
+
+
+
         ctx.beginPath();
         ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
 
@@ -137,4 +162,5 @@ class Car {
         this.sensor.draw(ctx);//car draws its own sensors
 
     }
-}//y axis goes downwards in computer screen
+    //y axis goes downwards in computer screen
+}
