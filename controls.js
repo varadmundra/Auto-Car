@@ -1,5 +1,5 @@
 class Controls {
-    constructor() {
+    constructor(type) {
         this.forward = false;
         this.left = false;
         this.right = false;
@@ -7,8 +7,16 @@ class Controls {
         // class controls has a constructor which has four attributes forward,left,right,reverse;
 
         // check whats pressed on keyboard;
+        switch (type) {
+            case "KEYS":
+                this.#addKeyboardListeners();
+                break;
 
-        this.#addKeyboardListeners();
+            case "DUMMY":
+                this.forward = true;
+                break;
+        }
+        // this.#addKeyboardListeners();
     }
     // method inside Controls class
     // # for private method cant acces outside Controls class, shoukdnt access
