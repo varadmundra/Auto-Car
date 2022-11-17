@@ -8,7 +8,7 @@ const car = new Car(road.getLaneCenter(1), 100, 30, 50, "KEYS");
 
 // car.draw(ctx);
 const traffic = [
-    new Car(road.getLaneCenter(1), -100, 30, 50)
+    new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 2)
 ];
 
 animate();
@@ -19,11 +19,11 @@ function animate() {
 
     //traffic
     for (let i = 0; i < traffic.length; i++) {
-        traffic[i].update(road.borders);
+        traffic[i].update(road.borders, []);
     }
 
 
-    car.update(road.borders);
+    car.update(road.borders, traffic);
 
     canvas.height = window.innerHeight;  //resizes canvas and it is clear;
 
@@ -32,9 +32,9 @@ function animate() {
 
     road.draw(ctx);
     for (let i = 0; i < traffic.length; i++) {
-        traffic[i].draw(ctx);
+        traffic[i].draw(ctx, "red");
     }
-    car.draw(ctx);
+    car.draw(ctx, "blue");
 
 
 

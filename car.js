@@ -1,5 +1,5 @@
 class Car {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, controlType, maxSpeed = 3) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -7,27 +7,37 @@ class Car {
 
         this.speed = 0;
         this.acceleration = 0.2;
-        this.maxSpeed = 3;
+        this.maxSpeed = maxSpeed;
         this.friction = 0.05;
         this.angle = 0;
         this.damaged = false;
 
-        this.sensor = new Sensor(this);//passing the car thru this
-        this.controls = new Controls();
+        if (controlType != "DUMMY") {
+            this.sensor = new Sensor(this);//passing the car thru this
+        }
+        this.controls = new Controls(controlType);
     }
-    update(roadBorders) {
+    update(roadBorders, traffic) {
         if (!this.damaged) {
             this.#move();
             this.polygon = this.#createPolygon()//update after moving car
-            this.damaged = this.#assessDamage(roadBorders);
+            this.damaged = this.#assessDamage(roadBorders, traffic);
         }
-        this.sensor.update(roadBorders);
-
+        if (this.sensor) {
+            this.sensor.update(roadBorders, traffic);
+        }
     }
 
-    #assessDamage(roadBorders) {
+    #assessDamage(roadBorders, traffic) {
         for (let i = 0; i < roadBorders.length; i++) {
             if (polysIntersect(this.polygon, roadBorders[i])) {
+                return true;
+            }
+
+        }
+
+        for (let i = 0; i < traffic.length; i++) {
+            if (polysIntersect(this.polygon, traffic[i].polygon)) {
                 return true;
             }
 
@@ -122,7 +132,7 @@ class Car {
     }
 
     //draw method 
-    draw(ctx) {
+    draw(ctx, color) {
         // ctx.save();
         // ctx.translate(this.x, this.y);
         // ctx.rotate(-this.angle);
@@ -147,7 +157,7 @@ class Car {
 
         }
         else {
-            ctx.fillStyle = "black";
+            ctx.fillStyle = color;
         }
 
 
@@ -159,9 +169,9 @@ class Car {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
         ctx.fill();
-
-        this.sensor.draw(ctx);//car draws its own sensors
-
+        if (this.sensor) {
+            this.sensor.draw(ctx);//car draws its own sensors
+        }
     }
     //y axis goes downwards in computer screen
 }
